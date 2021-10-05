@@ -18,4 +18,4 @@
 
 ---
 
-4. Khởi chạy server bằng cách chạy file bootstrap.php
+4. Khởi chạy server bằng cách chạy lệnh php -S 127.0.0.1:3000 -t public

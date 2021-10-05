@@ -13,13 +13,15 @@ class DatabaseConnector {
         $user = getenv('DB_USERNAME');
         $pass = getenv('DB_PASSWORD');
 
-        $this->dbConnection = new \mysqli($host, $user, $pass, $db, $port);
-
-        if ($this->dbConnection->connect_error) {
-          die("connection failure: " . $this->dbConnection->connect_error);
-        }
-        else {
-          echo "Connection established";
+        try {
+        $this->dbConnection = new \PDO(
+            "mysql:host=$host;port=$port;charset=utf8mb4;dbname=$db",
+            $user,
+            $pass
+        );
+        echo('Connected');
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
         }
     }
 
