@@ -17,9 +17,9 @@ $requestMethod = $_SERVER["REQUEST_METHOD"];
 if ($uri[1] === 'account'){
   if (isset($uri[2])) {
     $param = $uri[2];
-    $controller = new AccountController($dbConnection, $requestMethod, $param);
-    $controller->processRequest();
   }
+  $controller = new AccountController($dbConnection, $requestMethod, $param);
+  $controller->processRequest();
 }
 else {
   header("HTTP/1.1 404 Not Found");
