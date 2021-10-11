@@ -49,6 +49,7 @@ class AccountController {
 
   private function createAccount() {
     // $input = (array)json_decode(file_get_contents('php://input'),true);
+    $_POST = json_decode(file_get_contents("php://input"),true);
     $input = $_POST;
     if (! $this->validateInput($input)) {
       return $this->unprocessableEntityResponse();
