@@ -1,6 +1,7 @@
 <?php
 require "../bootstrap.php";
 use Src\Controller\AccountController;
+use Src\Controller\ProductController;
 
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
@@ -18,8 +19,15 @@ if ($uri[1] === 'account'){
   if (isset($uri[2])) {
     $param = $uri[2];
   }
-  $controller = new AccountController($dbConnection, $requestMethod, $param);
-  $controller->processRequest();
+  $accountController = new AccountController($dbConnection, $requestMethod, $param);
+  $accountController->processRequest();
+}
+else if ($uri[1] === 'product') {
+  if (isset($uri[2])) {
+    $param = $uri[2];
+  }
+  $productController = new ProductController($dbConnection, $requestMethod, $param);
+  $productController->processRequest();
 }
 else {
   header("HTTP/1.1 404 Not Found");
