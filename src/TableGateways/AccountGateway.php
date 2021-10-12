@@ -51,4 +51,35 @@ class AccountGateway {
       exit($e->getMessage());
     }
   }
+
+  public function updateAccount($phoneNumber, Array $input) {
+    $statement = "
+      UPDATE account
+      SET
+          first_name = :first_name,
+          last_name = :last_name,
+          address = :address,
+          email = :email,
+          password = :password,
+          coupon = :coupon,
+          updated_at = :updated_at
+      WHERE phone_number = :phone_number;
+    ";
+    try {
+      $statement = $this->db->prepare($statement);
+      $statement->execute(array(
+        'phone_number' => $phoneNumber,
+        'first_name' => $input['first_name'],
+        'last_name' => $input['last_name'],
+        'address' => $input['address'],
+        'email' => $input['email'],
+        'password' => $input['password'],
+        'coupon' => $input['coupon'],
+        'updated_at' => date('Y-m-d H:i:s', time())
+      ));
+      return $statement->rowCount();
+    } catch(\PDOException $e) {
+      exit($e->getMessage());
+    }
+  }
 }
