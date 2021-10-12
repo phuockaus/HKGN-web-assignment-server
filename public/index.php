@@ -2,6 +2,7 @@
 require "../bootstrap.php";
 use Src\Controller\AccountController;
 use Src\Controller\ProductController;
+use Src\Controller\NewsController;
 
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
@@ -28,6 +29,13 @@ else if ($uri[1] === 'product') {
   }
   $productController = new ProductController($dbConnection, $requestMethod, $param);
   $productController->processRequest();
+}
+else if ($uri[1] === 'news') {
+  if (isset($uri[2])) {
+    $param = $uri[2];
+  }
+  $newsController = new NewsController($dbConnection, $requestMethod, $param);
+  $newsController->processRequest();
 }
 else {
   header("HTTP/1.1 404 Not Found");
