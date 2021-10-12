@@ -30,6 +30,10 @@ class AccountController {
         $response = $this->createAccount();
         break;
 
+      case 'PUT':
+        $response = $this->updateAccount($this->phoneNumber);
+        break;
+
       default:
         $response = $this->notFoundResponse();
         break;
@@ -60,6 +64,22 @@ class AccountController {
     return $response;
   }
 
+  private function updateAccount($phoneNumber) {
+    $result = $this->accountGateway->findAccount($phoneNumber);
+    if (! $result) {
+      return $this->notFoundResponse();
+    }
+    $_POST = json_decode(file_get_contents("php://input"),true);
+    $input = $_POST;
+    if (! $this->validateUpdate($input)) {
+      return $this->unprocessableEntityResponse();
+    }
+    $this->accountGateway->updateAccount($phoneNumber, $input);
+    $response['status_code_header'] = 'HTTP/1.1 200 OK';
+    $response['body'] = null;
+    return $response;
+  }
+
   private function validateInput($input){
     if(! isset($input['first_name'])) return false;
     if(! isset($input['last_name'])) return false;
@@ -71,13 +91,23 @@ class AccountController {
     return true;
   }
 
+  private function validateUpdate($input){
+    if(! isset($input['first_name'])) return false;
+    if(! isset($input['last_name'])) return false;
+    if(! isset($input['address'])) return false;
+    if(! isset($input['email'])) return false;
+    if(! isset($input['password'])) return false;
+    if(! isset($input['coupon'])) return false;
+    return true;
+  }
+
   private function unprocessableEntityResponse()
   {
-      $response['status_code_header'] = 'HTTP/1.1 422 Unprocessable Entity';
-      $response['body'] = json_encode([
-          'error' => 'Invalid input'
-      ]);
-      return $response;
+    $response['status_code_header'] = 'HTTP/1.1 422 Unprocessable Entity';
+    $response['body'] = json_encode([
+      'error' => 'Invalid input'
+    ]);
+    return $response;
   }
 
   private function notFoundResponse() {
