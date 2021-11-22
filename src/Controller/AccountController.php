@@ -20,20 +20,21 @@ class AccountController {
 
   public function processRequest() {
     switch ($this->requestMethod) {
+      case 'OPTIONS':
+        $response['status_code_header'] = 'HTTP/1.1 200 OK';
+        $response['body'] = null;
+        return $response;
       case 'GET':
         if ($this->phoneNumber) {
           $response = $this->getAccount($this->phoneNumber);
         }
         break;
-
       case 'POST':
         $response = $this->createAccount();
         break;
-
       case 'PUT':
         $response = $this->updateAccount($this->phoneNumber);
         break;
-
       default:
         $response = $this->notFoundResponse();
         break;
