@@ -3,6 +3,7 @@ require "../bootstrap.php";
 use Src\Controller\AccountController;
 use Src\Controller\ProductController;
 use Src\Controller\NewsController;
+use Src\Controller\OrderController;
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type, origin");
@@ -16,6 +17,8 @@ $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = explode( '/', $uri );
 
 $param = null;
+$param1 = null;
+$param2 = null;
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 
 if ($uri[1] === 'account'){
@@ -38,6 +41,16 @@ else if ($uri[1] === 'news') {
   }
   $newsController = new NewsController($dbConnection, $requestMethod, $param);
   $newsController->processRequest();
+}
+else if ($uri[1] === 'order') {
+  if (isset($uri[2])) {
+    $param1 = $uri[2];
+  }
+  if (isset($uri[3])) {
+    $param2 = $uri[3];
+  }
+  $orderController = new OrderController($dbConnection, $requestMethod, $param1, $param2);
+  $orderController->processRequest();
 }
 else {
   header("HTTP/1.1 404 Not Found");

@@ -89,6 +89,7 @@ class AccountController {
     if(! isset($input['email'])) return false;
     if(! isset($input['password'])) return false;
     if(! isset($input['role'])) return false;
+    if (! isset($input['password'])) return false;
     return true;
   }
 
