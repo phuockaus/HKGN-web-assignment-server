@@ -32,7 +32,6 @@ class OrderController {
           $response = $this->getCartOfOrder($this->orderID);
         }
         else {
-          echo($this->accountID);
           $response = $this->getOrderOfAccount($this->accountID);
         }
         break;
