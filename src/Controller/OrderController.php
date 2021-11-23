@@ -35,6 +35,9 @@ class OrderController {
           $response = $this->getOrderOfAccount($this->accountID);
         }
         break;
+      case 'POST':
+        $response = $this->createOrder();
+        break;
     }
     header($response['status_code_header']);
     if ($response['body']) {
@@ -60,6 +63,27 @@ class OrderController {
     $response['status_code_header'] = 'HTTP/1.1 200 OK';
     $response['body'] = json_encode($result);
     return $response;
+  }
+
+  private function createOrder() {
+    $_POST = json_decode(file_get_contents("php://input"),true);
+    $input = $_POST;
+    if ( ! $this->validateInput($input)) {
+      return $this->unprocessableEntityResponse();
+    }
+    $this->orderGateway->createNewOrder($input);
+    $response['status_code_header'] = 'HTTP/1.1 201 Created';
+    $response['body'] = null;
+    return $response;
+  }
+
+  private function validateInput($input) {
+    if (! isset($input['customer_ID'])) return false;
+    if (! isset($input['sent_address'])) return false;
+    if (! isset($input['coupon'])) return false;
+    if (! isset($input['final_cost'])) return false;
+    if (! isset($input['list'])) return false;
+    return true;
   }
 
   private function unprocessableEntityResponse()
