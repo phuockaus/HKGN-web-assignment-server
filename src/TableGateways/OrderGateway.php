@@ -76,6 +76,25 @@ class OrderGateway {
     }
   }
 
+  public function updateCouponOfUser($accountID, $coupon) {
+    $statement = "
+      UPDATE account
+      SET
+        coupon = :coupon
+      WHERE account_ID = :accountID
+    ";
+    try {
+      $statement = $this->db->prepare($statement);
+      $statement->execute(array(
+        'accountID' => (int)$accountID,
+        'coupon' => (int)$coupon
+      ));
+
+    } catch (\PDOException $e) {
+      exit($e->getMessage());
+    }
+  }
+
   public function createNewOrder($input) {
     $statement = "
       INSERT INTO orders
@@ -103,6 +122,7 @@ class OrderGateway {
     foreach ($listItem as $item) {
       $res = $this->createItemInOrder($newOrderID, $item);
     }
+    $this->updateCouponOfUser($input['customer_ID'], $input['coupon']);
     return $statement->rowCount();
   }
 
