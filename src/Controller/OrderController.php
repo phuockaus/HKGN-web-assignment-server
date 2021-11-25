@@ -28,7 +28,10 @@ class OrderController {
         return $response;
         break;
       case 'GET':
-        if ($this->orderID) {
+        if (!$this->accountID) {
+          $response = $this->getAllOrder();
+        }
+        else if ($this->orderID) {
           $response = $this->getCartOfOrder($this->orderID);
         }
         else {
@@ -38,11 +41,30 @@ class OrderController {
       case 'POST':
         $response = $this->createOrder();
         break;
+      case 'PUT':
+        $response = $this->updateStatusOrder();
+        break;
     }
     header($response['status_code_header']);
     if ($response['body']) {
       echo $response['body'];
     }
+  }
+
+  private function updateStatusOrder() {
+    $_POST = json_decode(file_get_contents("php://input"),true);
+    $input = $_POST;
+    $this->orderGateway->updateStatusOfOrder($input);
+    $response['status_code_header'] = 'HTTP/1.1 201 Updated';
+    $response['body'] = null;
+    return $response;
+  }
+
+  private function getAllOrder() {
+    $result = $this->orderGateway->getAllOrder();
+    $response['status_code_header'] = 'HTTP/1.1 200 OK';
+    $response['body'] = json_encode($result);
+    return $response;
   }
 
   private function getCartOfOrder($orderID) {

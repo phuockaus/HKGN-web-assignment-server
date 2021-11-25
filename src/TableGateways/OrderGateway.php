@@ -126,4 +126,35 @@ class OrderGateway {
     return $statement->rowCount();
   }
 
+  public function getAllOrder () {
+    $statement = "
+    SELECT orders.order_ID, orders.sent_address, orders.final_cost, orders.status, orders.created_at, account.phone_number FROM orders INNER JOIN account ON orders.customer_ID = account.account_ID ORDER BY orders.order_ID DESC
+    ";
+
+    try {
+      $statement = $this->db->prepare($statement);
+      $statement->execute();
+      $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+      return $result;
+    } catch (\PDOException $e) {
+      exit($e->getMessage());
+    }
+  }
+
+  public function updateStatusOfOrder($input) {
+    $statement = "
+      UPDATE orders SET status = :status WHERE order_id = :order_id
+    ";
+
+    try {
+      $statement = $this->db->prepare($statement);
+      $statement->execute(array(
+        'status' => $input['status'],
+        'order_id' => (int)$input['order_id']
+      ));
+      return $statement->rowCount();
+    } catch (\PDOException $e) {
+      exit($e->getMessage());
+    }
+  }
 }
