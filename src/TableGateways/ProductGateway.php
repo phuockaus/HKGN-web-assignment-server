@@ -89,4 +89,16 @@ class ProductGateway {
       exit($e->getMessage());
     }
   }
+
+  public function deleteProduct($id) {
+    $statement = "DELETE FROM product WHERE product_ID = ?";
+
+    try {
+      $statement = $this->db->prepare($statement);
+      $statement->execute(array($id));
+      return $statement->rowCount();
+    } catch (\PDOException $e) {
+      exit($e->getMessage());
+    }
+  }
 }

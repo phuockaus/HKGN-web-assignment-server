@@ -38,6 +38,10 @@ class NewsController {
         $response = $this->updateNews($this->newsCode);
         break;
 
+      case 'DELETE':
+        $response = $this->deleteNews($this->newsCode);
+        break;
+
       default:
         $response = $this->notFoundResponse();
         break;
@@ -79,6 +83,17 @@ class NewsController {
     }
     $this->newsGateway->updateNews($newsCode, $input);
     $response['status_code_header'] = 'HTTP/1.1 200 OK';
+    $response['body'] = null;
+    return $response;
+  }
+
+  private function deleteNews($newsCode) {
+    $result = $this->newsGateway->findNews($newsCode);
+    if ( ! $result) {
+      return $this->notFoundResponse();
+    }
+    $this->newsGateway->deleteNews($newsCode);
+    $response['status_code_header'] = 'HTTP/1.1 200 DELETED';
     $response['body'] = null;
     return $response;
   }

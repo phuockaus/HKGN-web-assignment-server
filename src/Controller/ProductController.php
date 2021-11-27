@@ -38,6 +38,10 @@ class ProductController {
         $response = $this->updateProduct($this->productCode);
         break;
 
+      case 'DELETE':
+        $response = $this->deleteProduct($this->productCode);
+        break;
+
       default:
         $response = $this->notFoundResponse();
         break;
@@ -78,6 +82,16 @@ class ProductController {
     }
     $this->productGateway->updateProduct($productCode, $input);
     $response['status_code_header'] = 'HTTP/1.1 201 Updated';
+    $response['body'] = null;
+    return $response;
+  }
+
+  private function deleteProduct($productCode) {
+    if ( ! $this->productGateway->findProduct($productCode)) {
+      return $this->notFoundResponse();
+    }
+    $this->productGateway->deleteProduct($productCode);
+    $response['status_code_header'] = 'HTTP/1.1 201 Deleted';
     $response['body'] = null;
     return $response;
   }
