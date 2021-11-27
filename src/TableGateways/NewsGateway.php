@@ -87,4 +87,16 @@ class NewsGateway {
       exit($e->getMessage());
     }
   }
+
+  public function deleteNews($news_id) {
+    $statement ="DELETE FROM news WHERE news_ID = ?";
+    try {
+      $statement = $this->db->prepare($statement);
+      $statement->execute(array($news_id));
+      return $statement->rowCount();
+    } catch (\PDOException $e) {
+      exit($e->getMessage());
+    }
+  }
+
 }
