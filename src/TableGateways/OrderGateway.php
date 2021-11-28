@@ -76,6 +76,43 @@ class OrderGateway {
     }
   }
 
+  public function getCurrentStock($productID) {
+    $statement = "
+      SELECT stock FROM product WHERE product_id = ?
+    ";
+
+    try {
+      $statement = $this->db->prepare($statement);
+      $statement->execute(array($productID));
+      $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+      return (int)$result[0]['stock'];
+    } catch (\PDOException $e) {
+      exit($e->getMessage());
+    }
+  }
+
+  public function updateStockOfItemInCart ($input) {
+    $curStock = $this->getCurrentStock($input['product_ID']);
+    $statement = "
+      UPDATE product
+      SET
+        stock = :stock
+      WHERE product_ID = :product_ID
+    ";
+    
+    $newStock = $curStock - (int)$input['quantity'];
+    try {
+      $statement = $this->db->prepare($statement);
+      $statement->execute(array(
+        'stock' => (int)$newStock,
+        'product_ID' => (int)$input['product_ID']
+      ));
+      return $statement->rowCount();
+    } catch (\PDOException $e) {
+      exit($e->getMessage());
+    }
+  }
+
   public function updateCouponOfUser($accountID, $coupon) {
     $statement = "
       UPDATE account
@@ -106,24 +143,25 @@ class OrderGateway {
     try {
       $statement = $this->db->prepare($statement);
       $statement->execute(array(
-        'customer_ID' => $input['customer_ID'],
+        'customer_ID' => (int)$input['customer_ID'],
         'sent_address' => $input['sent_address'],
-        'coupon' => $input['coupon'],
-        'final_cost' => $input['final_cost'],
+        'coupon' => (int)$input['coupon'],
+        'final_cost' => (int)$input['final_cost'],
         'status' => 'waiting',
         'created_at' => date('Y-m-d H:i:s', time()),
         'updated_at' => date('Y-m-d H:i:s', time())
       ));
+      $newOrderID = $this->getEarliestOrder();
+      $listItem = $input['list'];
+      foreach ($listItem as $item) {
+        $this->createItemInOrder($newOrderID, $item);
+        $this->updateStockOfItemInCart($item);
+      }
+      $this->updateCouponOfUser($input['customer_ID'], $input['coupon']);
+      return $statement->rowCount();
     } catch (\PDOException $e) {
       exit($e->getMessage());
     }
-    $newOrderID = $this->getEarliestOrder();
-    $listItem = $input['list'];
-    foreach ($listItem as $item) {
-      $res = $this->createItemInOrder($newOrderID, $item);
-    }
-    $this->updateCouponOfUser($input['customer_ID'], $input['coupon']);
-    return $statement->rowCount();
   }
 
   public function getAllOrder () {
